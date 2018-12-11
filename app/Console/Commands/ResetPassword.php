@@ -1,0 +1,4 @@
+<?php
+namespace App\Console\Commands; use Illuminate\Console\Command; class ResetPassword extends Command { protected $signature = 'reset:password {email} {password}'; protected $description = 'Reset the password of user
+Usage: php artisan reset:password user@email.com'; public function __construct() { parent::__construct(); } public function handle() { $sp76c44e = $this->argument('email'); if (!$sp76c44e) { $this->warn('please input the user\'s email
+'); return false; } $spe2e14a = \App\User::where('email', $sp76c44e)->first(); if (!$spe2e14a) { $this->warn("can't find the user: {$sp76c44e} \nplease input the user's email\n"); return false; } $sp22d3ef = $this->argument('password'); $spe2e14a->password = bcrypt($sp22d3ef); $spe2e14a->save(); $this->info("the password of '{$sp76c44e}' has been set to {$sp22d3ef}\n"); return true; } }

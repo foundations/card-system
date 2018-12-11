@@ -37,9 +37,9 @@ a:focus{outline:0}
 .mod-ct .amount{font-size:48px;margin-top:20px}
 .mod-ct .qr-image{margin-top:30px}
 .mod-ct .qr-image img{width:230px;height:230px}
-.mod-ct .detail{margin-top:60px;padding-top:25px}
+.mod-ct .detail{margin-top:36px}
 .mod-ct .detail .arrow .ico-arrow{display:inline-block;width:20px;height:11px;background:url(../images/ali_qr.png) -25px -100px no-repeat}
-.mod-ct .detail .detail-ct{display:none;font-size:14px;text-align:right;line-height:28px;margin:0 15%}
+.mod-ct .detail .detail-ct{display:none;font-size:14px;text-align:right;line-height:28px;margin:0 15%;padding: 16px 0}
 .mod-ct .detail .detail-ct dt{float:left}
 .mod-ct .detail-open{border-top:1px solid #e5e5e5}
 .mod-ct .detail .arrow{padding:6px 34px;border:1px solid #e5e5e5}

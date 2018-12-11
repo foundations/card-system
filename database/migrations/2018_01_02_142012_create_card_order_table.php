@@ -1,0 +1,2 @@
+<?php
+use Illuminate\Support\Facades\Schema; use Illuminate\Database\Schema\Blueprint; use Illuminate\Database\Migrations\Migration; class CreateCardOrderTable extends Migration { public function up() { Schema::create('card_order', function (Blueprint $sp04f69b) { $sp04f69b->increments('id'); $sp04f69b->integer('order_id'); $sp04f69b->integer('card_id'); }); } public function down() { Schema::dropIfExists('card_order'); } }

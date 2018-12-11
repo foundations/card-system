@@ -1,42 +1,4 @@
 <?php
-
-namespace App\Console;
-
-use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
-class Kernel extends ConsoleKernel
-{
-    /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
-    protected $commands = [
-        //
-    ];
-
-    /**
-     * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
-    protected function schedule(Schedule $schedule)
-    {
-        // $schedule->command('inspire')
-        //          ->hourly();
-    }
-
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
-    protected function commands()
-    {
-        $this->load(__DIR__.'/Commands');
-
-        require base_path('routes/console.php');
-    }
-}
+namespace App\Console; use App\System; use Carbon\Carbon; use Illuminate\Console\Scheduling\Schedule; use Illuminate\Foundation\Console\Kernel as ConsoleKernel; class Kernel extends ConsoleKernel { protected $commands = array(); protected function schedule(Schedule $sp293243) { try { \DB::connection()->getPdo(); if (\DB::table('migrations')->count() === 0) { throw new \Exception('No migration table'); } if (!\Schema::hasTable('systems')) { throw new \Exception('No system table'); } } catch (\Exception $spa0e498) { if (config('database.connections.mysql.host') === '数据库地址') { echo ' * Please config your database info in \'.env\' 
+'; } else { echo ' * Database connection error: ' . $spa0e498->getMessage() . '
+'; } return; } if (System::_getInt('order_clean_unpay_open') === 1) { $sp024af9 = System::_getInt('order_clean_unpay_day', 7); $sp293243->call(function () use($sp024af9) { \App\Order::where('status', \App\Order::STATUS_UNPAY)->where('created_at', '<', (new Carbon())->addDays(-$sp024af9))->delete(); })->dailyAt('01:00'); } } protected function commands() { $this->load(__DIR__ . '/Commands'); require base_path('routes/console.php'); } }

@@ -19,15 +19,19 @@
         <div class="order"></div>
         <!--div class="amount">￥0.01</div-->
         <div class="qr-image" id="qrcode"></div>
-
+        <div id="open-app-container">
+            <span style="display: block;margin-top: 24px">请截屏此界面或保存二维码，打开微信扫码，选择相册图片</span>
+            <a style="padding:6px 34px;border:1px solid #e5e5e5;display: inline-block;margin-top: 8px" id="open-app"
+               href="weixin://">点击打开微信</a>
+        </div>
         <div class="detail" id="orderDetail">
             <dl class="detail-ct" style="display: none;">
                 <dt>商品</dt>
-                <dd id="storeName">用户充值</dd>
+                <dd id="storeName">{{ $name }}</dd>
                 <!--dt>说明</dt>
                 <dd id="productName">用户充值</dd-->
                 <dt>订单号</dt>
-                <dd id="billId"><?php echo $id?></dd>
+                <dd id="billId">{{ $id }}</dd>
                 <dt>时间</dt>
                 <dd id="createTime"><?php echo date('Y-m-d H:i:s')?></dd>
             </dl>
@@ -53,15 +57,53 @@
 </div>
 
 <script>
-    var code_url = '<?php echo $qrcode ?>';
-    var qrcode = new QRCode("qrcode", {
-        text: code_url,
-        width: 230,
-        height: 230,
-        colorDark: "#000000",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    var code_url = decodeURIComponent('{!! urlencode($qrcode) !!}');
+
+    if (code_url.indexOf('weixin://') === -1 && navigator.userAgent.match(/MicroMessenger/i) !== null) {
+
+        $('.tip>.ico-scan').remove();
+        $('.tip>.tip-text').html('<p>请在弹出的窗口完成支付</p>');
+        $('#open-app-container').html('<p></p>');
+        $('#orderDetail>.detail-ct').show();
+        $('#orderDetail>.arrow').remove();
+
+        function onBridgeReady() {
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest', JSON.parse(code_url),
+                function (res) {
+                    if (res.err_msg === 'get_brand_wcpay_request:fail') {
+                        $('.tip>.tip-text').html('<p>支付失败</p><p>' + res.err_desc + '</p>');
+                        alert(res.err_desc)
+                    } else if (res.err_msg === 'get_brand_wcpay_request:ok') {
+                        //使用以上方式判断前端返回,微信团队郑重提示：
+                        //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+                        $('.tip>.tip-text').html('<p>订单已支付, 正在处理...</p>');
+                    }
+                });
+        }
+
+        if (typeof WeixinJSBridge === 'undefined') {
+            if (document.addEventListener) {
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+            }
+        } else {
+            onBridgeReady();
+        }
+    } else {
+        new QRCode('qrcode', {
+            text: code_url,
+            width: 230,
+            height: 230,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H,
+            title: '请使用微信扫一扫'
+        });
+    }
+
 
     // 订单详情
     var orderDetail = $('#orderDetail');
@@ -79,21 +121,29 @@
 
     $(document).ready(function () {
         var time = 4000, interval;
+
         function getData() {
-            $.post('/api/qrcode/query/wechat', {
-                    id: '<?php echo $id?>',
+            $.post('/api/qrcode/query/{!! $pay_id !!}', {
+                    id: '{!! $id !!}',
                     t: Math.random()
                 },
                 function (r) {
-                    if (r.code === 0) {
-                        clearInterval(interval);
-                        window.location = r.data;
-                    }
+                    clearInterval(interval);
+                    window.location = r.data;
                 }, 'json');
         }
+
         (function run() {
             interval = setInterval(getData, time);
         })();
-    });</script>
+    });
+
+    // call app
+    if (navigator.userAgent.match(/(iPhone|iPod|Android|ios|SymbianOS)/i) !== null) {
+        // 想跳转微信, 真的跳不过去啊, 傻吊微信
+    } else {
+        $('#open-app-container').hide();
+    }
+</script>
 </body>
 </html>

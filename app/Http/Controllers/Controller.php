@@ -1,13 +1,2 @@
 <?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-class Controller extends BaseController
-{
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-}
+namespace App\Http\Controllers; use App\System; use Illuminate\Foundation\Bus\DispatchesJobs; use Illuminate\Routing\Controller as BaseController; use Illuminate\Foundation\Validation\ValidatesRequests; use Illuminate\Foundation\Auth\Access\AuthorizesRequests; use Illuminate\Http\Request; class Controller extends BaseController { use AuthorizesRequests, DispatchesJobs, ValidatesRequests; function is_mobile() { if (isset($_SERVER['HTTP_USER_AGENT'])) { if (preg_match('/(iPhone|iPod|Android|ios|SymbianOS|Windows Phone)/i', $_SERVER['HTTP_USER_AGENT'])) { return true; } } return false; } protected function isAdmin() { return \Auth::getUser()->role === 'admin'; } function authQuery(Request $spceaf29, $sp440ee3, $sp1c0e83 = 'user_id', $sp679f36 = 'user_id') { if (self::isAdmin()) { $speb13d0 = (int) $spceaf29->input($sp679f36); if ($speb13d0) { return $sp440ee3::where($sp1c0e83, $speb13d0); } return $sp440ee3::query(); } else { return $sp440ee3::where($sp1c0e83, \Auth::id()); } } protected function getUserId(Request $spceaf29, $sp679f36 = 'user_id') { return \Auth::id(); } protected function getUserIdOrFail(Request $spceaf29, $sp679f36 = 'user_id') { $speb13d0 = self::getUserId($spceaf29, $sp679f36); if ($speb13d0) { return $speb13d0; } else { throw new \Exception('参数缺少 ' . $sp679f36); } } protected function getUser(Request $spceaf29) { if (self::isAdmin()) { $speb13d0 = (int) $spceaf29->post('user_id'); if (!$speb13d0) { return null; } $spe2e14a = \App\User::findOrFail($speb13d0); return $spe2e14a; } else { return \Auth::getUser(); } } protected function checkIsInMaintain() { if ((int) System::_get('maintain') === 1) { $sp1d6a05 = System::_get('maintain_info'); echo view('message', array('title' => '维护中', 'message' => $sp1d6a05)); die; } } protected function msg($spcd2480, $sp6bb6c3 = null, $sp7c25f3 = null) { return view('message', array('message' => $spcd2480, 'title' => $sp6bb6c3, 'exception' => $sp7c25f3)); } }

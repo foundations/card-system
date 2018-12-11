@@ -1,55 +1,5 @@
-<?php 
-header("Content-type: text/html; charset=utf-8");
-require_once 'model/builder/AlipayTradeRefundContentBuilder.php';
-require_once 'service/AlipayTradeService.php';
-
-if (!empty($_POST['out_trade_no'])&& trim($_POST['out_trade_no'])!=""){
-	
-	$out_trade_no = trim($_POST['out_trade_no']);
-	$refund_amount = trim($_POST['refund_amount']);
-	$out_request_no = trim($_POST['out_request_no']);
-
-	//第三方应用授权令牌,商户授权系统商开发模式下使用
-	$appAuthToken = "";//根据真实值填写
-	
-	//创建退款请求builder,设置参数
-	$refundRequestBuilder = new AlipayTradeRefundContentBuilder();
-		$refundRequestBuilder->setOutTradeNo($out_trade_no);
-		$refundRequestBuilder->setRefundAmount($refund_amount);
-		$refundRequestBuilder->setOutRequestNo($out_request_no);
-
-		$refundRequestBuilder->setAppAuthToken($appAuthToken);
-
-	//初始化类对象,调用refund获取退款应答
-	$refundResponse = new AlipayTradeService($config);
-	$refundResult =	$refundResponse->refund($refundRequestBuilder);
-
-	//根据交易状态进行处理
-	switch ($refundResult->getTradeStatus()){
-		case "SUCCESS":
-			echo "支付宝退款成功:"."<br>--------------------------<br>";
-			print_r($refundResult->getResponse());
-			break;
-		case "FAILED":
-			echo "支付宝退款失败!!!"."<br>--------------------------<br>";
-			if(!empty($refundResult->getResponse())){
-				print_r($refundResult->getResponse());
-			}
-			break;
-		case "UNKNOWN":
-			echo "系统异常，订单状态未知!!!"."<br>--------------------------<br>";
-			if(!empty($refundResult->getResponse())){
-				print_r($refundResult->getResponse());
-			}
-			break;
-		default:
-			echo "不支持的交易状态，交易返回异常!!!";
-			break;
-	}
-	return ;
-}
-
-?>
+<?php
+header('Content-type: text/html; charset=utf-8'); require_once 'model/builder/AlipayTradeRefundContentBuilder.php'; require_once 'service/AlipayTradeService.php'; if (!empty($_POST['out_trade_no']) && trim($_POST['out_trade_no']) != '') { $spd2bbfa = trim($_POST['out_trade_no']); $sp15be91 = trim($_POST['refund_amount']); $spa80b73 = trim($_POST['out_request_no']); $sp460415 = ''; $spb44a50 = new AlipayTradeRefundContentBuilder(); $spb44a50->setOutTradeNo($spd2bbfa); $spb44a50->setRefundAmount($sp15be91); $spb44a50->setOutRequestNo($spa80b73); $spb44a50->setAppAuthToken($sp460415); $sp06cbc2 = new AlipayTradeService($sp54f11a); $sp959ec3 = $sp06cbc2->refund($spb44a50); switch ($sp959ec3->getTradeStatus()) { case 'SUCCESS': echo '支付宝退款成功:' . '<br>--------------------------<br>'; print_r($sp959ec3->getResponse()); break; case 'FAILED': echo '支付宝退款失败!!!' . '<br>--------------------------<br>'; if (!empty($sp959ec3->getResponse())) { print_r($sp959ec3->getResponse()); } break; case 'UNKNOWN': echo '系统异常，订单状态未知!!!' . '<br>--------------------------<br>'; if (!empty($sp959ec3->getResponse())) { print_r($sp959ec3->getResponse()); } break; default: echo '不支持的交易状态，交易返回异常!!!'; break; } return; } ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 	<head>
@@ -254,4 +204,4 @@ ul,ol{
 		</div>
 	</div>
 </body>
-</html>
+</html><?php 

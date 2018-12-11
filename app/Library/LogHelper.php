@@ -1,0 +1,2 @@
+<?php
+namespace App\Library; class LogHelper { public static function setLogFile($spe4461d) { \Log::getMonolog()->setHandlers(array()); \Log::useDailyFiles(storage_path() . '/logs/' . $spe4461d . '.log', 0, config('app.log_level')); } }
